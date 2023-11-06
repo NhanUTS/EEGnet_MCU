@@ -1,0 +1,28 @@
+{
+	"name": "tflm-tree-_mkfl_pytr",
+	"description": "Allows you to run machine learning models locally on your device.",
+	"version": "2.4.0",
+	"repository":
+	{
+		"type": "git",
+		"url": "https://github.com/<todo>.git"
+	},
+	"authors":
+	{
+		"name": "Pete Warden",
+		"email": "petewarden@google.com"
+	},
+	"homepage": "https://www.tensorflow.org/lite/microcontrollers/overview",
+	"frameworks": "arduino",
+	"platforms":"ststm32",
+	"build" : {
+		"flags": [
+        "-Ithird_party/gemmlowp",
+        "-Ithird_party/flatbuffers/include",
+        "-Ithird_party/kissfft",
+        "-Ithird_party/cmsis/",
+		"-Ithird_party/ruy/"
+			
+		]
+	}
+}

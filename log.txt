@@ -1,0 +1,10 @@
+EEGnet_portenta_verNn
+
+library: base from tflm-tree-_mkfl_pytr
+ add: library.json 
+	to: add search path 
+	    add build flag
+ add: array.h (copy from original github "tflite-micro/tensorflow/lite/array.h"
+		to "tflm-tree-_mkfl_pytr/tensorflow/lite")
+	to: fix kernel_util.cc - line#28 "tflm-tree-_mkfl_pytr/tensorflow/lite/kernels"
+	
