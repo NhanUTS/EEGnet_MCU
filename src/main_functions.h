@@ -16,13 +16,13 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_MICRO_EEGNET_MAIN_FUNCTIONS_H_
 #define TENSORFLOW_LITE_MICRO_EEGNET_MAIN_FUNCTIONS_H_
 
-// #include "EEGnet.h"
+#include <Arduino.h>  //doesn't do anything
 
 // Expose a C friendly interface for main functions.
 #ifdef __cplusplus
 extern "C" {
 #endif
-// #include "EEGnet.h"
+
 // Initializes all data needed for the example. The name is important, and needs
 // to be setup() for Arduino compatibility.
 void setup();

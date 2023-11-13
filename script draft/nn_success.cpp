@@ -13,8 +13,8 @@
 #include "tensorflow/lite/micro/micro_log.h"
 #include "tensorflow/lite/micro/micro_profiler.h"
 
-#include "EEGnet.h"
-#include "EEGnet_model.h"
+// #include "EEGnet.h"
+// #include "EEGnet_model.h"
 // #include "main_functions.h" //name-mangling
 #include "test_model/NeuralNetwork.h"
 #include "test_model/model_data.h"
@@ -41,7 +41,7 @@ uint8_t* RAMptr ;
 SDMMCBlockDevice block_device;
 mbed::FATFileSystem fs("fs");
 
-EEGnet *eegNET;
+// EEGnet *eegNET;
 
 NeuralNetwork *nn;
 bool test = true;  
