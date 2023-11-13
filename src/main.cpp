@@ -1,6 +1,7 @@
-#include <Arduino.h>  //comment out line 63, weird conflict redefinition of abs()
+// #include <Arduino.h>  //comment out line 63, weird conflict redefinition of abs()
                       //might be standard/compatibility/optimisation related 
 
+// #include <main_functions.h>
 // #include <stdio.h>
 // #include <stdlib.h>
 
@@ -155,6 +156,10 @@ void loop()
 
   /*Setup Model */
   // {
+
+    Serial.println("Model setup");
+      delay(500);
+
     tflite::MicroProfiler profiler;
     EEGnet_OpResolver op_resolver;
     (RegisterOps(op_resolver));
@@ -162,10 +167,12 @@ void loop()
     constexpr long int kTensorArenaSize = 2000000;
         Serial.println("kTnAr ="+String(kTensorArenaSize));
         delay(200);
+
     // uint8_t tensor_arena[kTensorArenaSize];
         // Serial.println("TensorArena ="+String(tensor_arena));
         // delay(200);
-    constexpr int kNumResourceVariables = 24;
+
+    // constexpr int kNumResourceVariables = 24; //not yet clear the use of this variable
 
 
     model = tflite::GetModel(my_EEGnet_ogA_1_h5_tflite);
@@ -194,7 +201,7 @@ void loop()
     Serial.println("Model created");
         delay(500);
 
-    // basic function test
+      // basic function test
     Serial.println("Basic function test:");  
         delay(500);
 
@@ -204,20 +211,20 @@ void loop()
     Serial.println("    ouput size = "+String(output->dims->size));
         delay(500);
 
-        Serial.println(".");
+        Serial.print("    .");
     size_t used_bytes = interpreter->arena_used_bytes();
     Serial.println("the model occupied: "+String(used_bytes)+"bytes");
         delay(500);
-        Serial.println(".");
+        Serial.print("  .");
 
     input->data.f[0] = 1.f;
     TfLiteStatus invoke_status = (interpreter->Invoke());
-    Serial.print("    First invoke: ");
+    Serial.print("First invoke: ");
       delay(500);
 
     if (invoke_status !=kTfLiteOk)
     {
-    Serial.println("fail.");
+    Serial.println("fail :( ");
       delay(500);
     }
     else
@@ -226,10 +233,10 @@ void loop()
       delay(500);    
     }  
     float result_t = output->data.f[0];
-    Serial.println("input = 1. ; output = "+String(result_t));
+    Serial.println("    input = 1. ; output = "+String(result_t));
   // } /*End of model setup*/
 
-  while (test == true)
+  while (test == true)    // a simple neural network, for testing purpose
   {
 
     float number1 = random(100) / 100.0;
@@ -246,22 +253,32 @@ void loop()
     const char *predicted = result > 0.5 ? "True" : "False";
   
     Serial.println(String(number1)+" " +String(number2) +" - result " +  String(result) + " - Expected " + String(expected) +", Predicted "+predicted);
-
-
   }
 
-  while (test == false)
+  float ts, te, dt, st;
+  // st = 1800;
+  //   Serial.println("time set: " +String(st));
+  // ts = millis();
+  //   delay(1800);
+  // te = millis();
+  // dt = te-ts;
+  // Serial.println("time measure: " +String(dt));
+
+  
+
+  while (test == false) //running the EEG model
   {
-      Serial.print("- Variable setup ");
+      Serial.println("- Variable setup ");
       delay(500);
 
-      const int channel =60;
-      const int tp =151;
-      const int label = 4;
-      int dtp = channel*tp; 
+      const int noE = 288;    //no. of epochs
+      const int channel =60;  //no. of channel
+      const int tp =151;      //sampling rate
+      const int label = 4;    //no. of label 
+      int dtp = channel*tp;   //total data point for a single predict
 
       float indata = 0; 
-      float re[label];
+      float re[label] = {0, 0, 0, 0}; //label array
 
       // {
       //   Serial.print("- Model creating ");
@@ -278,98 +295,104 @@ void loop()
       // eegNET->getInputBuffer()[0] = number1;
       // eegNET->getInputBuffer()[1] = number2;
       char mes[60];  
-      FILE * fr; 
-
-      delay(500);
-      Serial.println("Open data file");
+      
+      FILE * fr;       
+        Serial.println("Open data file");
+        delay(500);
       fr = fopen ("fs/eegNet/mne_e1_arg.txt", "r");
       
 
       while (fr==NULL)
       {
-        delay(500);
-        // Serial.println("file open fail!!!");
-        // Serial.println("retry open file\n");
+        // delay(500);
+        // Serial.println("     file open fail!!!");
+        // Serial.println("     retry open file\n");
         fr = fopen ("fs/eegNet/mne_e1_arg.txt", "r");
-
       }
 
       FILE * fw; 
-      delay(500);
-      Serial.println("Open write file");
+        Serial.println("Open write file");
+        delay(500);
       fw = fopen ("fs/eegNet/ftest_results.txt", "a");
 
       while (fw==NULL)
       {
         delay(500);
-        // Serial.println("file open fail!!!");
-        // Serial.println("retry open file\n");
+        // Serial.println("     file open fail!!!");
+        // Serial.println("     retry open file\n");
         fw = fopen ("fs/eegNet/ftest_results.txt", "a");
       }
       
-      delay(500);
-      Serial.println("loading data");
+        Serial.println("loading data");
+        delay(500);
       // while(!feof(fr))
-      // for(int i =0; i<dtp; i++)
-      // {
-      //   fgets(mes, 60, fr); //get the data from txt file as string
-      // //   // *(data_p+index) = strtof(mes,NULL) + var;
-      //   int idx = i;
-      //   Serial.print(".");
-      //   indata = strtof(mes,NULL);
-      //   Serial.print(".");
-      //   // fprintf(fw,"%f\n",(indata));
+        ts = millis();
+      for(int i =0; i<dtp; i++)
+      {
+        fgets(mes, 60, fr); //get the data from txt file as string
+      //   // *(data_p+index) = strtof(mes,NULL) + var;
+        int idx = i;
+        // Serial.print(".");
+        indata = strtof(mes,NULL);
+        input->data.f[i] = indata;
+        // Serial.print(".");
+        // fprintf(fw,"%f\n",(indata));
 
-      //   // eegNET->getInputBuffer()[i] = indata;
+        // eegNET->getInputBuffer()[i] = indata;
 
-      //   // (eegNET)->input->data.f[i] = indata;
-      //   eegNET->getInputBufferAr(idx, indata) ;
-      //   Serial.print(".");
-      // }
-
+        // (eegNET)->input->data.f[i] = indata;
+        // eegNET->getInputBufferAr(idx, indata) ;
+        // Serial.print(".");
+      }
+        te = millis();
+        dt = te-ts;
 
       fclose(fr); //close reading file
-      delay(1000);
-        Serial.println("Data loaded");
+        Serial.println("Data loaded: "+String(dt)+"ms");
         delay(500);
       
       // float result = eegNET->predict();
       
-        Serial.println("Invoke Model");
+        Serial.print("Model invoke: ");
         delay(500);
       // {
-      //   eegNET->Invoke();
-
-
-      //   // for (int i =0; i<label; i++)
-      //   // {
-      //   //   re[i] = eegNET->output->data.f[i];
-      //   // }
-
-      //   re[0] = eegNET->predict1();
-      //   re[1] = eegNET->predict2();
-      //   re[2] = eegNET->predict3();
-      //   re[3] = eegNET->predict4();
-      // }
-      delay(500);
+                ts = micros();
+            TfLiteStatus invoke_status = interpreter->Invoke();
+                te = micros();
+                dt = te-ts;
+              if (invoke_status !=kTfLiteOk)
+              {
+                Serial.println("fail.");
+                  delay(500);
+              }
+              else
+              {    
+                Serial.println("pass!");
+                  delay(500);
+              }                           
+                Serial.println("    invoke time: " +String(dt)+"us");
+        
+        for (int i =0; i<label; i++)
+        {
+          re[i] = output->data.f[i];
+        }
+      
       Serial.println("\n.\n.\n.\n ");
       delay(500);
+      
       Serial.println("Output:");
-      
-      // Serial.println("%.2f %.2f - result %.2f - Expected %s, Predicted %s\n", number1, number2, result, expected, predicted);
-      
-      for (int i =0; i<label; i++)
+      delay(500);
+
+      for (int i =0; i<label; i++)    //print label to serial
       {
-      Serial.println("Label "+String(i)+": " + String(re[i]));
-      delay(1000); 
+        Serial.println("  Label "+String(i+1)+": " + String(re[i]));
+        delay(1000); 
       }
 
       delay(500);
       Serial.println(".");
-      
-      
 
-      for(int i =0; i<label; i++)
+      for(int i =0; i<label; i++)   //write label to txt file
       {
         fprintf(fw,"Label %i: ",i);
         fprintf(fw,"%f\n",re[i]);
