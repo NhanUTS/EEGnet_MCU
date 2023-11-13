@@ -218,7 +218,11 @@ void loop()
         Serial.print("  .");
 
     input->data.f[0] = 1.f;
+    
+        float ts1, te1, dt1, st1;
+        ts1 = micros();
     TfLiteStatus invoke_status = (interpreter->Invoke());
+        te1 = micros();
     Serial.print("First invoke: ");
       delay(500);
 
@@ -229,42 +233,98 @@ void loop()
     }
     else
     {    
-    Serial.println("pass!");
+    Serial.print("pass!");
       delay(500);    
     }  
+
+        dt1 = te1-ts1;
+        Serial.println(" : " +String(dt1)+"us");
+
     float result_t = output->data.f[0];
     Serial.println("    input = 1. ; output = "+String(result_t));
   // } /*End of model setup*/
 
-  while (test == true)    // a simple neural network, for testing purpose
-  {
+  // while (test == true)    // a simple neural network, for testing purpose
+  // {
 
-    float number1 = random(100) / 100.0;
-    float number2 = random(100) / 100.0;
+  //   float number1 = random(100) / 100.0;
+  //   float number2 = random(100) / 100.0;
 
-    input->data.f[0] = number1;
-    input->data.f[1] = number2;
+  //   input->data.f[0] = number1;
+  //   input->data.f[1] = number2;
 
-    interpreter->Invoke();
-    float result = output->data.f[0];
+  //   interpreter->Invoke();
+  //   float result = output->data.f[0];
 
 
-    const char *expected = number2 > number1 ? "True" : "False";
-    const char *predicted = result > 0.5 ? "True" : "False";
+  //   const char *expected = number2 > number1 ? "True" : "False";
+  //   const char *predicted = result > 0.5 ? "True" : "False";
   
-    Serial.println(String(number1)+" " +String(number2) +" - result " +  String(result) + " - Expected " + String(expected) +", Predicted "+predicted);
-  }
+  //   Serial.println(String(number1)+" " +String(number2) +" - result " +  String(result) + " - Expected " + String(expected) +", Predicted "+predicted);
+  // }
 
   float ts, te, dt, st;
-  // st = 1800;
-  //   Serial.println("time set: " +String(st));
-  // ts = millis();
-  //   delay(1800);
-  // te = millis();
-  // dt = te-ts;
-  // Serial.println("time measure: " +String(dt));
+  // // st = 1800;
+  // //   Serial.println("time set: " +String(st));
+  // // ts = millis();
+  // //   delay(1800);
+  // // te = millis();
+  // // dt = te-ts;
+  // // Serial.println("time measure: " +String(dt));
 
-  
+  while (true)
+  {
+    Serial.println("- Variable setup ");
+      delay(500);
+    const int noE = 23;    //no. of epochs
+    char* readfile_ap="fs/data_test/tr_w";
+    char* f_xtn = ".txt";
+
+    // char* a = "tr_w";
+    // char* b = ".txt";
+    // char c = c;
+    // // char ab = a+b;
+    // char noo[10];
+    // sprintf(noo,"%c%c and %c", a,b,c);
+    // Serial.println(noo);
+    //   delay(500);
+
+
+      // char* str_p;
+      // str_p = &f_xtn;
+
+    for (int i =0; i<noE; i++)
+    {
+      FILE* fr;
+      // char file_name = (readfile_ap+String(i)+f_xtn);
+      // char* fn_p = &file_name ;       
+      char file_name[10];
+      sprintf(file_name,"%s%i%s",readfile_ap,i,f_xtn);
+        Serial.print("Opening file: ");
+        Serial.println((file_name));
+        delay(500);
+      fr = fopen (file_name, "r");
+
+      // while (fr==NULL)
+      // {
+      //   fr = fopen ("fs/eegNet/mne_e1_arg.txt", "r");
+      // }
+      char mes[10];
+      float indata;
+      while(!feof(fr))
+      {
+        fgets(mes, 60, fr);
+        indata = strtof(mes,NULL)+100;
+
+        Serial.println("    "+String(indata));
+          delay(200);
+      }
+
+
+    }
+
+
+  }
 
   while (test == false) //running the EEG model
   {
@@ -280,6 +340,35 @@ void loop()
       float indata = 0; 
       float re[label] = {0, 0, 0, 0}; //label array
 
+      char* readfile_ap="fs/data_test/tr_w";
+      char* f_xtn = ".txt";
+
+    for (int i =0; i<noE; i++)
+    {
+      FILE* fr;
+      // char file_name = (readfile_ap+String(i)+f_xtn);
+      // char* fn_p = &file_name ;       
+      char file_name[10];
+      sprintf(file_name,"%s%i%s",readfile_ap,i,f_xtn);
+        Serial.print("Opening file: ");
+        Serial.println((file_name));
+        delay(500);
+      fr = fopen (file_name, "r");
+
+      // while (fr==NULL)
+      // {
+      //   fr = fopen ("fs/eegNet/mne_e1_arg.txt", "r");
+      // }
+      char mes[10];
+      float indata;
+      while(!feof(fr))
+      {
+        fgets(mes, 60, fr);
+        indata = strtof(mes,NULL)+100;
+
+        Serial.println("    "+String(indata));
+          delay(200);
+      }
       // {
       //   Serial.print("- Model creating ");
       //   delay(500);
@@ -289,7 +378,7 @@ void loop()
       //   Serial.println("It's here !!!!");
       // }
       
-
+      
       // eegNET
       //   Serial.println("Model kSize = " +String(EEGNET_))
       // eegNET->getInputBuffer()[0] = number1;
@@ -405,7 +494,9 @@ void loop()
       {
         sleep();
       }
-  } 
+    } 
+  }
+
 }
 
 void sdMounting_def (void)
