@@ -261,7 +261,7 @@ switch (mode)
     break;
 
   case 1:   
-  Serial.println("EEGnet -Single Invoke");
+  Serial.println("EEGnet - Single Invoke");
   delay(500);
 
   // while (test == false) //running the EEG model
@@ -410,7 +410,7 @@ switch (mode)
     break;
 
   case 2:
-    Serial.println("Continous mode");
+    Serial.println("EEGnet - Continous mode");
       delay(500);
 
     //   char* readfile_ap="fs/data_test/tr_w";
@@ -449,11 +449,12 @@ switch (mode)
   case 3:
     break;
 
-  case 4:
+  case 4:  
+    Serial.println("consequential file read test");
+      delay(500);
   // while (true)
   // {
-  //   Serial.println("consequential file read test");
-  //     delay(500);
+
   //   const int noE = 23;    //no. of epochs
   //   char* readfile_ap="fs/data_test/tr_w";
   //   char* f_xtn = ".txt";
