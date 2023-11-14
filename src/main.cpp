@@ -219,7 +219,7 @@ void loop()
 
     input->data.f[0] = 1.f;
     
-        float ts1, te1, dt1, st1;
+        float ts1, te1, dt1;
         ts1 = micros();
     TfLiteStatus invoke_status = (interpreter->Invoke());
         te1 = micros();
@@ -272,7 +272,7 @@ void loop()
   // // dt = te-ts;
   // // Serial.println("time measure: " +String(dt));
 
-  while (true)
+  while (false)
   {
     Serial.println("- Variable setup ");
       delay(500);
@@ -280,18 +280,18 @@ void loop()
     char* readfile_ap="fs/data_test/tr_w";
     char* f_xtn = ".txt";
 
-    // char* a = "tr_w";
-    // char* b = ".txt";
-    // char c = c;
-    // // char ab = a+b;
-    // char noo[10];
-    // sprintf(noo,"%c%c and %c", a,b,c);
-    // Serial.println(noo);
-    //   delay(500);
+                            // char* a = "tr_w";
+                            // char* b = ".txt";
+                            // char c = c;
+                            // // char ab = a+b;
+                            // char noo[10];
+                            // sprintf(noo,"%c%c and %c", a,b,c);
+                            // Serial.println(noo);
+                            //   delay(500);
 
 
-      // char* str_p;
-      // str_p = &f_xtn;
+                              // char* str_p;
+                              // str_p = &f_xtn;
 
     for (int i =0; i<noE; i++)
     {
@@ -319,16 +319,12 @@ void loop()
         Serial.println("    "+String(indata));
           delay(200);
       }
-
-
     }
-
-
   }
 
   while (test == false) //running the EEG model
   {
-      Serial.println("- Variable setup ");
+      Serial.println("EEGnet - continuous ");
       delay(500);
 
       const int noE = 288;    //no. of epochs
@@ -340,162 +336,201 @@ void loop()
       float indata = 0; 
       float re[label] = {0, 0, 0, 0}; //label array
 
-      char* readfile_ap="fs/data_test/tr_w";
+      char* readfile_ap="fs/EEGnet_B/inputs_xtr_s0/e_";
       char* f_xtn = ".txt";
 
+      char mes[60];  
+      
     for (int i =0; i<noE; i++)
     {
+      int idx = i;
       FILE* fr;
       // char file_name = (readfile_ap+String(i)+f_xtn);
       // char* fn_p = &file_name ;       
-      char file_name[10];
+      char file_name[20];
+      
       sprintf(file_name,"%s%i%s",readfile_ap,i,f_xtn);
-        Serial.print("Opening file: ");
-        Serial.println((file_name));
-        delay(500);
-      fr = fopen (file_name, "r");
-
-      // while (fr==NULL)
-      // {
-      //   fr = fopen ("fs/eegNet/mne_e1_arg.txt", "r");
-      // }
-      char mes[10];
-      float indata;
-      while(!feof(fr))
-      {
-        fgets(mes, 60, fr);
-        indata = strtof(mes,NULL)+100;
-
-        Serial.println("    "+String(indata));
-          delay(200);
-      }
-      // {
-      //   Serial.print("- Model creating ");
-      //   delay(500);
-      //   // eegNET = new EEGnet();
-      //   eegNET = new EEGnet(RAMptr,SDRAM_ARRAY_BYTES);
-
-      //   Serial.println("It's here !!!!");
-      // }
-      
-      
-      // eegNET
-      //   Serial.println("Model kSize = " +String(EEGNET_))
-      // eegNET->getInputBuffer()[0] = number1;
-      // eegNET->getInputBuffer()[1] = number2;
-      char mes[60];  
-      
-      FILE * fr;       
-        Serial.println("Open data file");
-        delay(500);
-      fr = fopen ("fs/eegNet/mne_e1_arg.txt", "r");
-      
-
-      while (fr==NULL)
-      {
+        Serial.print("Epoch no." +String(i));
         // delay(500);
-        // Serial.println("     file open fail!!!");
-        // Serial.println("     retry open file\n");
-        fr = fopen ("fs/eegNet/mne_e1_arg.txt", "r");
-      }
+      fr = fopen (file_name, "r");
+            while (fr==NULL)
+            {             
+              fr = fopen (file_name, "r");
+            }
 
-      FILE * fw; 
-        Serial.println("Open write file");
-        delay(500);
-      fw = fopen ("fs/eegNet/ftest_results.txt", "a");
+      char mes[10];
 
-      while (fw==NULL)
-      {
-        delay(500);
-        // Serial.println("     file open fail!!!");
-        // Serial.println("     retry open file\n");
-        fw = fopen ("fs/eegNet/ftest_results.txt", "a");
-      }
-      
-        Serial.println("loading data");
-        delay(500);
-      // while(!feof(fr))
-        ts = millis();
       for(int i =0; i<dtp; i++)
       {
         fgets(mes, 60, fr); //get the data from txt file as string
-      //   // *(data_p+index) = strtof(mes,NULL) + var;
-        int idx = i;
-        // Serial.print(".");
+      
+        
         indata = strtof(mes,NULL);
-        input->data.f[i] = indata;
-        // Serial.print(".");
-        // fprintf(fw,"%f\n",(indata));
-
-        // eegNET->getInputBuffer()[i] = indata;
-
-        // (eegNET)->input->data.f[i] = indata;
-        // eegNET->getInputBufferAr(idx, indata) ;
-        // Serial.print(".");
+        input->data.f[i] = indata; //push data to model's input tensor
+        
       }
-        te = millis();
-        dt = te-ts;
-
       fclose(fr); //close reading file
-        Serial.println("Data loaded: "+String(dt)+"ms");
-        delay(500);
-      
-      // float result = eegNET->predict();
-      
-        Serial.print("Model invoke: ");
-        delay(500);
-      // {
-                ts = micros();
-            TfLiteStatus invoke_status = interpreter->Invoke();
-                te = micros();
-                dt = te-ts;
-              if (invoke_status !=kTfLiteOk)
-              {
-                Serial.println("fail.");
-                  delay(500);
-              }
-              else
-              {    
-                Serial.println("pass!");
-                  delay(500);
-              }                           
-                Serial.println("    invoke time: " +String(dt)+"us");
+
+          ts = micros();
+      TfLiteStatus invoke_status = interpreter->Invoke();
+          te = micros();
+          dt = te-ts;
+        if (invoke_status !=kTfLiteOk)
+        {
+          Serial.println("fail.");
+            delay(500);
+        }
+        else
+        {    
+          Serial.print("success!");
+            // delay(500);
+        }                           
+          Serial.println("    invoke time: " +String(dt)+"us");
         
         for (int i =0; i<label; i++)
         {
           re[i] = output->data.f[i];
         }
-      
-      Serial.println("\n.\n.\n.\n ");
-      delay(500);
-      
-      Serial.println("Output:");
-      delay(500);
+
+      Serial.print("    Output: ");
+      // delay(500);
 
       for (int i =0; i<label; i++)    //print label to serial
       {
-        Serial.println("  Label "+String(i+1)+": " + String(re[i]));
-        delay(1000); 
+        Serial.print("[l"+String(i+1)+"]" + String(re[i])+"  ");
+        // delay(400); 
       }
-
-      delay(500);
-      Serial.println(".");
-
-      for(int i =0; i<label; i++)   //write label to txt file
-      {
-        fprintf(fw,"Label %i: ",i);
-        fprintf(fw,"%f\n",re[i]);
-      }
+      Serial.println("");
       
-      fclose(fw);
+
+      FILE * fw; 
+        // Serial.println("Open write file");
+        // delay(500);
+      fw = fopen ("fs/EEGnet_B/c_mode_result2.txt", "a");
+            while (fw==NULL)
+            {
+              fw = fopen ("fs/eegNet/ftest_results.txt", "a");
+            }
+
+        fprintf(fw,"E%i:",idx);      
+        for(int i =0; i<label; i++)   //write label to txt file
+        {
+          fprintf(fw,"[l%i]%f ",(i+1),re[i]);          
+        } fprintf(fw,"\n");
+      fclose(fw); 
+
+    }
+
+      // FILE * fr;       
+      //   Serial.println("Open data file");
+      //   delay(500);
+      // fr = fopen ("fs/eegNet/mne_e1_arg.txt", "r");
+      
+
+      // while (fr==NULL)
+      // {
+      //   // delay(500);
+      //   // Serial.println("     file open fail!!!");
+      //   // Serial.println("     retry open file\n");
+      //   fr = fopen ("fs/eegNet/mne_e1_arg.txt", "r");
+      // }
+
+      // FILE * fw; 
+      //   Serial.println("Open write file");
+      //   delay(500);
+      // fw = fopen ("fs/eegNet/ftest_results.txt", "a");
+
+      // while (fw==NULL)
+      // {
+      //   delay(500);
+      //   // Serial.println("     file open fail!!!");
+      //   // Serial.println("     retry open file\n");
+      //   fw = fopen ("fs/eegNet/ftest_results.txt", "a");
+      // }
+      
+      //   Serial.println("loading data");
+      //   delay(500);
+      // // while(!feof(fr))
+      //   ts = millis();
+      // for(int i =0; i<dtp; i++)
+      // {
+      //   fgets(mes, 60, fr); //get the data from txt file as string
+      // //   // *(data_p+index) = strtof(mes,NULL) + var;
+      //   int idx = i;
+      //   // Serial.print(".");
+      //   indata = strtof(mes,NULL);
+      //   input->data.f[i] = indata;
+      //   // Serial.print(".");
+      //   // fprintf(fw,"%f\n",(indata));
+
+      //   // eegNET->getInputBuffer()[i] = indata;
+
+      //   // (eegNET)->input->data.f[i] = indata;
+      //   // eegNET->getInputBufferAr(idx, indata) ;
+      //   // Serial.print(".");
+      // }
+      //   te = millis();
+      //   dt = te-ts;
+
+      // fclose(fr); //close reading file
+      //   Serial.println("Data loaded: "+String(dt)+"ms");
+      //   delay(500);
+      
+      // // float result = eegNET->predict();
+      
+      //   Serial.print("Model invoke: ");
+      //   delay(500);
+      // // {
+      //           ts = micros();
+      //       TfLiteStatus invoke_status = interpreter->Invoke();
+      //           te = micros();
+      //           dt = te-ts;
+      //         if (invoke_status !=kTfLiteOk)
+      //         {
+      //           Serial.println("fail.");
+      //             delay(500);
+      //         }
+      //         else
+      //         {    
+      //           Serial.println("pass!");
+      //             delay(500);
+      //         }                           
+      //           Serial.println("    invoke time: " +String(dt)+"us");
+        
+      //   for (int i =0; i<label; i++)
+      //   {
+      //     re[i] = output->data.f[i];
+      //   }
+      
+      // Serial.println("\n.\n.\n.\n ");
+      // delay(500);
+      
+      // Serial.println("Output:");
+      // delay(500);
+
+      // for (int i =0; i<label; i++)    //print label to serial
+      // {
+      //   Serial.println("  Label "+String(i+1)+": " + String(re[i]));
+      //   delay(1000); 
+      // }
+
+      // delay(500);
+      // Serial.println(".");
+
+      // for(int i =0; i<label; i++)   //write label to txt file
+      // {
+      //   fprintf(fw,"Label %i: ",i);
+      //   fprintf(fw,"%f\n",re[i]);
+      // }
+      
+      // fclose(fw);
 
       Serial.println("chilling ... ");
       while(true)
       {
         sleep();
       }
-    } 
-  }
+  } 
 
 }
 
