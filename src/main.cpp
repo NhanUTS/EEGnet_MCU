@@ -1,4 +1,4 @@
-// #include <Arduino.h>  //comment out line 63, weird conflict redefinition of abs()
+#include <Arduino.h>  //comment out line 63, weird conflict redefinition of abs()
                       //might be standard/compatibility/optimisation related 
 
 // #include <main_functions.h>
@@ -84,6 +84,8 @@ namespace
 }  // namespace
 
 void sdMounting_def (void);
+int get_label(float *apt, size_t NoE);
+
 void setup()
 {
   pinMode(LEDR, OUTPUT);
@@ -349,7 +351,7 @@ void loop()
       // char* fn_p = &file_name ;       
       char file_name[20];
       
-      sprintf(file_name,"%s%i%s",readfile_ap,i,f_xtn);
+      sprintf(file_name,"%s%i%s",readfile_ap,i,f_xtn); /**/
         Serial.print("Epoch no." +String(i));
         // delay(500);
       fr = fopen (file_name, "r");
@@ -406,18 +408,32 @@ void loop()
       FILE * fw; 
         // Serial.println("Open write file");
         // delay(500);
-      fw = fopen ("fs/EEGnet_B/c_mode_result2.txt", "a");
+      fw = fopen ("fs/EEGnet_B/c_mode_detail_result.txt", "a");
             while (fw==NULL)
             {
-              fw = fopen ("fs/eegNet/ftest_results.txt", "a");
+              fw = fopen ("fs/EEGnet_B/c_mode_detail_result.txt", "a");              
             }
 
-        fprintf(fw,"E%i:",idx);      
+        fprintf(fw,"E%i: %f ",idx, dt);      
         for(int i =0; i<label; i++)   //write label to txt file
         {
-          fprintf(fw,"[l%i]%f ",(i+1),re[i]);          
+          fprintf(fw," [l%i]%f ",(i+1),re[i]);          
         } fprintf(fw,"\n");
       fclose(fw); 
+
+      int lb = get_label(re, 4);
+      FILE * fwl; 
+        // Serial.println("Open write file");
+        // delay(500);
+      fwl = fopen ("fs/EEGnet_B/c_mode_label.txt", "a");
+            while (fwl==NULL)
+            {
+              fwl = fopen ("fs/EEGnet_B/c_mode_label.txt", "a");
+            }
+
+        fprintf(fwl,"%i \n",lb);      
+        
+      fclose(fwl); 
 
     }
 
@@ -546,3 +562,19 @@ void sdMounting_def (void)
   }
 }
 
+int get_label(float *apt, size_t NoE)
+{
+    int id = 0;
+    
+    float max = *apt;
+    for(int i =0; i<NoE; i++)
+    {
+        float val = *(apt+i);
+        if(val>max)
+        {
+            max = val;
+            id = i;            
+        }
+    }
+    return (id+1);
+}
