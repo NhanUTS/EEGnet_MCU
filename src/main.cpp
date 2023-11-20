@@ -16,7 +16,7 @@
 
 // Original model with full layers
 // #include "EEGnet.h"
-// #include "EEGnet_model.h"
+#include "EEGnet_model.h"
 
 #include "butchered_model/my_EEGnet_ogA_1_h5_mc.h"
 
@@ -79,6 +79,9 @@ namespace
   TF_LITE_ENSURE_STATUS(op_resolver.AddFullyConnected());
   TF_LITE_ENSURE_STATUS(op_resolver.AddSoftmax());
 
+    //the following two are specifically for OG, which is not yet success
+  // TF_LITE_ENSURE_STATUS(op_resolver.AddTranspose());  
+  // TF_LITE_ENSURE_STATUS(op_resolver.AddAveragePool2D());
   return kTfLiteOk;
   }
 }  // namespace
@@ -141,7 +144,7 @@ void setup()
 void loop()
 {
 
-  Serial.println("Main - EEGnet -On");
+  Serial.println("Main - EEGnet - b");
   delay(500);
 
   for(int i =0; i<2; i++) //Blinking for fun 
@@ -178,6 +181,7 @@ void loop()
 
 
     model = tflite::GetModel(my_EEGnet_ogA_1_h5_tflite);
+      // model = tflite::GetModel(EEGNET_tfLite_tflite);
         Serial.println("Model: "+ String(model->version()));
         Serial.println("Schema: "+ String(TFLITE_SCHEMA_VERSION));
           delay(500);
@@ -326,7 +330,7 @@ void loop()
 
   while (test == false) //running the EEG model
   {
-      Serial.println("EEGnet - continuous ");
+      Serial.println("EEGnet - B - continuous ");
       delay(500);
 
       const int noE = 288;    //no. of epochs
@@ -379,12 +383,12 @@ void loop()
           dt = te-ts;
         if (invoke_status !=kTfLiteOk)
         {
-          Serial.println("fail.");
+          Serial.println(" fail.");
             delay(500);
         }
         else
         {    
-          Serial.print("success!");
+          Serial.print(" success!");
             // delay(500);
         }                           
           Serial.println("    invoke time: " +String(dt)+"us");
@@ -408,10 +412,10 @@ void loop()
       FILE * fw; 
         // Serial.println("Open write file");
         // delay(500);
-      fw = fopen ("fs/EEGnet_B/c_mode_detail_result.txt", "a");
+      fw = fopen ("fs/EEGnet_B/c_mode_OG_detail_result.txt", "a");
             while (fw==NULL)
             {
-              fw = fopen ("fs/EEGnet_B/c_mode_detail_result.txt", "a");              
+              fw = fopen ("fs/EEGnet_B/c_mode_OG_detail_result.txt", "a");              
             }
 
         fprintf(fw,"E%i: %f ",idx, dt);      
@@ -425,10 +429,10 @@ void loop()
       FILE * fwl; 
         // Serial.println("Open write file");
         // delay(500);
-      fwl = fopen ("fs/EEGnet_B/c_mode_label.txt", "a");
+      fwl = fopen ("fs/EEGnet_B/c_mode_OG_label.txt", "a");
             while (fwl==NULL)
             {
-              fwl = fopen ("fs/EEGnet_B/c_mode_label.txt", "a");
+              fwl = fopen ("fs/EEGnet_B/c_mode_OG_label.txt", "a");
             }
 
         fprintf(fwl,"%i \n",lb);      
