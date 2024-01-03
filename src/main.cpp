@@ -1,10 +1,6 @@
 #include <Arduino.h>  //comment out line 63, weird conflict redefinition of abs()
                       //might be standard/compatibility/optimisation related 
 
-// #include <main_functions.h>
-// #include <stdio.h>
-// #include <stdlib.h>
-
 #include "tensorflow/lite/core/c/common.h"
 #include "tensorflow/lite/micro/system_setup.h"
 #include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
@@ -18,13 +14,8 @@
 // #include "EEGnet.h"
 #include "EEGnet_model.h"
 
-#include "butchered_model/my_EEGnet_ogA_1_h5_mc.h"
-
 // Butchered models aka removed layers that has not been supported by the official tflite-micro
-#include "butchered_model/my_EnK_q.h"
-#include "butchered_model/my_ogA_f_q.h"
-#include "butchered_model/my_ogA_1_q.h"
-#include "butchered_model/my_ogA_m_q.h"
+#include "butchered_model/my_EEGnet_ogA_1_h5_mc.h"
 
 //Simple neural network model for testing purpose
 #include "test_model/NeuralNetwork.h"
@@ -79,7 +70,7 @@ namespace
   TF_LITE_ENSURE_STATUS(op_resolver.AddFullyConnected());
   TF_LITE_ENSURE_STATUS(op_resolver.AddSoftmax());
 
-    //the following two are specifically for OG, which is not yet success
+    //the following two are specifically for the OG model, which is not yet available
   // TF_LITE_ENSURE_STATUS(op_resolver.AddTranspose());  
   // TF_LITE_ENSURE_STATUS(op_resolver.AddAveragePool2D());
   return kTfLiteOk;
@@ -177,11 +168,10 @@ void loop()
         // Serial.println("TensorArena ="+String(tensor_arena));
         // delay(200);
 
-    // constexpr int kNumResourceVariables = 24; //not yet clear the use of this variable
+    // constexpr int kNumResourceVariables = 24; //not yet clear about the use of this variable
 
 
     model = tflite::GetModel(my_EEGnet_ogA_1_h5_tflite);
-      // model = tflite::GetModel(EEGNET_tfLite_tflite);
         Serial.println("Model: "+ String(model->version()));
         Serial.println("Schema: "+ String(TFLITE_SCHEMA_VERSION));
           delay(500);
@@ -427,8 +417,6 @@ void loop()
 
       int lb = get_label(re, 4);
       FILE * fwl; 
-        // Serial.println("Open write file");
-        // delay(500);
       fwl = fopen ("fs/EEGnet_B/c_mode_OG_label.txt", "a");
             while (fwl==NULL)
             {
@@ -440,110 +428,6 @@ void loop()
       fclose(fwl); 
 
     }
-
-      // FILE * fr;       
-      //   Serial.println("Open data file");
-      //   delay(500);
-      // fr = fopen ("fs/eegNet/mne_e1_arg.txt", "r");
-      
-
-      // while (fr==NULL)
-      // {
-      //   // delay(500);
-      //   // Serial.println("     file open fail!!!");
-      //   // Serial.println("     retry open file\n");
-      //   fr = fopen ("fs/eegNet/mne_e1_arg.txt", "r");
-      // }
-
-      // FILE * fw; 
-      //   Serial.println("Open write file");
-      //   delay(500);
-      // fw = fopen ("fs/eegNet/ftest_results.txt", "a");
-
-      // while (fw==NULL)
-      // {
-      //   delay(500);
-      //   // Serial.println("     file open fail!!!");
-      //   // Serial.println("     retry open file\n");
-      //   fw = fopen ("fs/eegNet/ftest_results.txt", "a");
-      // }
-      
-      //   Serial.println("loading data");
-      //   delay(500);
-      // // while(!feof(fr))
-      //   ts = millis();
-      // for(int i =0; i<dtp; i++)
-      // {
-      //   fgets(mes, 60, fr); //get the data from txt file as string
-      // //   // *(data_p+index) = strtof(mes,NULL) + var;
-      //   int idx = i;
-      //   // Serial.print(".");
-      //   indata = strtof(mes,NULL);
-      //   input->data.f[i] = indata;
-      //   // Serial.print(".");
-      //   // fprintf(fw,"%f\n",(indata));
-
-      //   // eegNET->getInputBuffer()[i] = indata;
-
-      //   // (eegNET)->input->data.f[i] = indata;
-      //   // eegNET->getInputBufferAr(idx, indata) ;
-      //   // Serial.print(".");
-      // }
-      //   te = millis();
-      //   dt = te-ts;
-
-      // fclose(fr); //close reading file
-      //   Serial.println("Data loaded: "+String(dt)+"ms");
-      //   delay(500);
-      
-      // // float result = eegNET->predict();
-      
-      //   Serial.print("Model invoke: ");
-      //   delay(500);
-      // // {
-      //           ts = micros();
-      //       TfLiteStatus invoke_status = interpreter->Invoke();
-      //           te = micros();
-      //           dt = te-ts;
-      //         if (invoke_status !=kTfLiteOk)
-      //         {
-      //           Serial.println("fail.");
-      //             delay(500);
-      //         }
-      //         else
-      //         {    
-      //           Serial.println("pass!");
-      //             delay(500);
-      //         }                           
-      //           Serial.println("    invoke time: " +String(dt)+"us");
-        
-      //   for (int i =0; i<label; i++)
-      //   {
-      //     re[i] = output->data.f[i];
-      //   }
-      
-      // Serial.println("\n.\n.\n.\n ");
-      // delay(500);
-      
-      // Serial.println("Output:");
-      // delay(500);
-
-      // for (int i =0; i<label; i++)    //print label to serial
-      // {
-      //   Serial.println("  Label "+String(i+1)+": " + String(re[i]));
-      //   delay(1000); 
-      // }
-
-      // delay(500);
-      // Serial.println(".");
-
-      // for(int i =0; i<label; i++)   //write label to txt file
-      // {
-      //   fprintf(fw,"Label %i: ",i);
-      //   fprintf(fw,"%f\n",re[i]);
-      // }
-      
-      // fclose(fw);
 
       Serial.println("chilling ... ");
       while(true)
