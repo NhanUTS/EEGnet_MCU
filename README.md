@@ -59,9 +59,9 @@ There are several different versions of EEGnet out there. The original github in
 
 As mentioned earlier, TFLM doesn't have all the required operators for EEGnet. The two missing operators are Transpose and AveragePooling2D.  
 
-The original git repo includes a trained model, which can be coinverted into tflite and then c array, but attempt to create an interpreter would result in a crash. 
+The original git repo includes a trained model, which can be converted into tflite and then c array, but attempt to create an interpreter would result in a crash. 
 
-## Quirks & Tips for beginners
+## Quirks
 During the process, I encounter a few major hiccups, this section is sort of a reflection of the whole experience, hoping that it might be useful for others. 
 
 ### TFLM itself
@@ -70,22 +70,22 @@ The git repo is still receiving new update but the web documentation is not keep
 *Tips*: When search, include "TFLM" or "micro" or "microcontroller" instead of "lite", "lite" returns alot of results for mobile device for me. 
 
 ### Conflict between Arduino and TFLM
-A peculiar hiccup. In vscode+platformio, when compile the script, it will tell you that there is a conflict at line 63 in the Arduino.h, the line is just defining the absolute value abs() function. Per the internet, this conflict is not completely unheard of, but I'm failed to find a proper fix. Since it seems relatively harmless, I decided to comment out the line and turn a blind eye, the whole thing compiles and runs fine ever since. The problem might even be platformio, but as of now, I don't have enough expertise to pin point the cause.  
+A peculiar hiccup. In vscode+platformio, when compile the script, it will tell you that there is a conflict at line 63 in the Arduino.h, the line is just defining the absolute value `abs()` function. Per the internet, this conflict is not completely unheard of, but I'm failed to find a proper fix. Since it seems relatively harmless, I decided to comment out the line and turn a blind eye, the whole thing compiles and runs fine ever since. The problem might even be platformio, but as of now, I don't have enough expertise to pin point the cause.  
 
 # Afterthoughts 
 Well, this project is obviously not perfect, there're a few things can be improved on: 
 
--*EEGnet in its fullest*: fingercrossing while waiting for TFLM to support the two remaining operators. Alternatively, find a way to implement it myself.  
+- EEGnet in its fullest*: fingercrossing while waiting for TFLM to support the two remaining operators. Alternatively, find a way to implement it myself.  
 
--*Optimisation*: the TFLM library can be built specifically for the M7 core, would that improve the inference speed further?
+- *Optimisation*: the TFLM library can be built specifically for the M7 core, would that improve the inference speed further?
 
--*The Arduino framework*: per the weird conflict, would moving away from the arduino framework mitigate it? The portenta does have support for mbed framework, so that's one option.
+- *The Arduino framework*: per the weird conflict, would moving away from the arduino framework mitigate it? The portenta does have support for mbed framework, so that's one option.
 
 
 Still, this project was eye-opening. Before this, I didn't think it was possible to run machine learning without an OS, let alone on a device with a size of a nametag. 
 
 # Some helpful resource
-[TinyML book]().   
+[TinyML book](https://tinymlbook.com/).   
 [Project: A simple neural network on ESP32](https://github.com/atomic14/tensorflow-lite-esp32).  
 [Project: A handwriting recognition using Sony Spresence](https://www.hackster.io/taroyoshino007/get-started-with-tensorflow-lite-micro-by-sony-spresense-e92bf1#code). 
 
