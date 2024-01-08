@@ -75,7 +75,7 @@ A peculiar hiccup. In vscode+platformio, when compile the script, it will tell y
 # Afterthoughts 
 Well, this project is obviously not perfect, there're a few things can be improved on: 
 
-- EEGnet in its fullest*: fingercrossing while waiting for TFLM to support the two remaining operators. Alternatively, find a way to implement it myself.  
+- *EEGnet in its fullest*: fingercrossing while waiting for TFLM to support the two remaining operators. Alternatively, find a way to implement it myself.  
 
 - *Optimisation*: the TFLM library can be built specifically for the M7 core, would that improve the inference speed further?
 
