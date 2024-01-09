@@ -57,7 +57,7 @@ EEGnet is popular, powerful and have everything about it, from the code to the t
 
 There are several different versions of EEGnet out there. The original github includes several variants made for specific paradigms, the one used in this project is based on the ERP.   
 
-As mentioned earlier, TFLM doesn't have all the required operators for EEGnet. The two missing operators are Transpose and AveragePooling2D.  
+As mentioned earlier, TFLM doesn't have all the required operators for EEGnet. The two missing operators are `DepthwiseConv2DNative` and `AveragePooling`.  
 
 The original git repo includes a trained model, which can be converted into tflite and then c array, but attempt to create an interpreter would result in a crash. 
 
@@ -67,7 +67,7 @@ During the process, I encounter a few major hiccups, this section is sort of a r
 ### TFLM itself
 The git repo is still receiving new update but the web documentation is not keeping up, so keep that in mind. If you follow the documentation and encounter an error, don't panic, just go into the source file, see how it is implemented, and edit your code accordingly.
 
-*Tips*: When search, include "TFLM" or "micro" or "microcontroller" instead of "lite", "lite" returns alot of results for mobile device for me. 
+*Tip*: When search, include "TFLM" or "micro" or "microcontroller" instead of "lite", "lite" returns alot of results for mobile device for me. 
 
 ### Conflict between Arduino and TFLM
 A peculiar hiccup. In vscode+platformio, when compile the script, it will tell you that there is a conflict at line 63 in the Arduino.h, the line is just defining the absolute value `abs()` function. Per the internet, this conflict is not completely unheard of, but I'm failed to find a proper fix. Since it seems relatively harmless, I decided to comment out the line and turn a blind eye, the whole thing compiles and runs fine ever since. The problem might even be platformio, but as of now, I don't have enough expertise to pin point the cause.  
@@ -87,7 +87,7 @@ Still, this project was eye-opening. Before this, I didn't think it was possible
 # Some helpful resource
 [TinyML book](https://tinymlbook.com/).   
 [Project: A simple neural network on ESP32](https://github.com/atomic14/tensorflow-lite-esp32).  
-[Project: A handwriting recognition using Sony Spresence](https://www.hackster.io/taroyoshino007/get-started-with-tensorflow-lite-micro-by-sony-spresense-e92bf1#code). 
+[Project: Handwriting recognition using Sony Spresence](https://www.hackster.io/taroyoshino007/get-started-with-tensorflow-lite-micro-by-sony-spresense-e92bf1#code). 
 
 And if you still havent found your answer, the internet is there.  
 
