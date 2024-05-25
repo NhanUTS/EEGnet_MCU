@@ -16,7 +16,7 @@
 
 // Butchered models aka removed layers that has not been supported by the official tflite-micro
 #include "butchered_model/my_EEGnet_ogA_1_h5_mc.h"
-
+#include "butchered_model/EEGnet_btchA2.h"
 //Simple neural network model for testing purpose
 #include "test_model/NeuralNetwork.h"
 #include "test_model/model_data.h"
@@ -69,6 +69,8 @@ namespace
   TF_LITE_ENSURE_STATUS(op_resolver.AddReshape());
   TF_LITE_ENSURE_STATUS(op_resolver.AddFullyConnected());
   TF_LITE_ENSURE_STATUS(op_resolver.AddSoftmax());
+
+  TF_LITE_ENSURE_STATUS(op_resolver.AddAveragePool2D());
 
     //the following two are specifically for the OG model, which is not yet available
   // TF_LITE_ENSURE_STATUS(op_resolver.AddTranspose());  
@@ -135,7 +137,7 @@ void setup()
 void loop()
 {
 
-  Serial.println("Main - EEGnet - b");
+  Serial.println("Main - EEGnet - btchA2");
   delay(500);
 
   for(int i =0; i<2; i++) //Blinking for fun 
@@ -171,7 +173,7 @@ void loop()
     // constexpr int kNumResourceVariables = 24; //not yet clear about the use of this variable
 
 
-    model = tflite::GetModel(my_EEGnet_ogA_1_h5_tflite);
+    model = tflite::GetModel(EEGnet_btchA2_tflite);
         Serial.println("Model: "+ String(model->version()));
         Serial.println("Schema: "+ String(TFLITE_SCHEMA_VERSION));
           delay(500);
@@ -402,10 +404,10 @@ void loop()
       FILE * fw; 
         // Serial.println("Open write file");
         // delay(500);
-      fw = fopen ("fs/EEGnet_B/c_mode_OG_detail_result.txt", "a");
+      fw = fopen ("fs/EEGnet_B/btchA2_detail_result.txt", "a");
             while (fw==NULL)
             {
-              fw = fopen ("fs/EEGnet_B/c_mode_OG_detail_result.txt", "a");              
+              fw = fopen ("fs/EEGnet_B/btchA2_detail_result.txt", "a");              
             }
 
         fprintf(fw,"E%i: %f ",idx, dt);      
@@ -417,10 +419,10 @@ void loop()
 
       int lb = get_label(re, 4);
       FILE * fwl; 
-      fwl = fopen ("fs/EEGnet_B/c_mode_OG_label.txt", "a");
+      fwl = fopen ("fs/EEGnet_B/btchA2_label.txt", "a");
             while (fwl==NULL)
             {
-              fwl = fopen ("fs/EEGnet_B/c_mode_OG_label.txt", "a");
+              fwl = fopen ("fs/EEGnet_B/btchA2_label.txt", "a");
             }
 
         fprintf(fwl,"%i \n",lb);      
